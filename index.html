@@ -1,0 +1,1221 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SpekTech - Climate impact technology annual report redesign</title>
+  <style>
+    :root {
+      --bg:      oklch(97% 0.012 80);
+      --surface: oklch(99% 0.006 80);
+      --fg:      oklch(13% 0.018 150);
+      --muted:   oklch(42% 0.025 145);
+      --border:  oklch(83% 0.018 85);
+      --accent:  oklch(28% 0.085 155);
+
+      --font-display: 'Iowan Old Style', 'Charter', Georgia, serif;
+      --font-body:    'Iowan Old Style', 'Charter', Georgia, serif;
+      --font-label:   'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --font-mono:    'Lato', ui-monospace, Menlo, monospace;
+
+      --accent-soft: color-mix(in oklch, var(--accent) 12%, transparent);
+      --fg-soft: color-mix(in oklch, var(--fg) 7%, transparent);
+      --paper-warm: color-mix(in oklch, var(--bg) 82%, var(--surface));
+      --container: 1180px;
+      --gutter: clamp(18px, 4vw, 48px);
+      --radius: 2px;
+      --shadowline: 0 1px 0 var(--fg);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, color-mix(in oklch, var(--fg) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(180deg, color-mix(in oklch, var(--fg) 3%, transparent) 1px, transparent 1px),
+        var(--bg);
+      background-size: 72px 72px;
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body[data-theme="dark"] {
+      --bg: oklch(16% 0.025 150);
+      --surface: oklch(20% 0.026 150);
+      --fg: oklch(94% 0.014 86);
+      --muted: oklch(72% 0.026 115);
+      --border: oklch(35% 0.035 145);
+      --accent: oklch(76% 0.11 120);
+    }
+
+    body[data-theme="field"] {
+      --bg: oklch(94% 0.038 105);
+      --surface: oklch(98% 0.016 93);
+      --fg: oklch(15% 0.026 132);
+      --muted: oklch(40% 0.04 120);
+      --border: oklch(76% 0.045 100);
+      --accent: oklch(34% 0.11 145);
+    }
+
+    body[data-scale="compact"] {
+      --container: 1240px;
+      --gutter: clamp(16px, 3.2vw, 40px);
+    }
+
+    body[data-scale="spacious"] {
+      --container: 1100px;
+      --gutter: clamp(22px, 4.6vw, 60px);
+    }
+
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    p { margin: 0; text-wrap: pretty; }
+    h1, h2, h3 { margin: 0; text-wrap: balance; font-family: var(--font-display); }
+    .container { max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+    .section { padding-block: clamp(70px, 10vw, 136px); border-top: 1.5px solid var(--fg); }
+    body[data-scale="compact"] .section { padding-block: clamp(52px, 7vw, 96px); }
+    body[data-scale="spacious"] .section { padding-block: clamp(86px, 12vw, 164px); }
+    .label {
+      font-family: var(--font-label);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .sans { font-family: var(--font-label); }
+    .lead { max-width: 62ch; color: var(--muted); font-size: clamp(20px, 2.2vw, 28px); line-height: 1.32; }
+    body[data-scale="compact"] .lead { font-size: clamp(18px, 1.7vw, 23px); line-height: 1.38; }
+    body[data-scale="spacious"] .lead { font-size: clamp(21px, 2.4vw, 30px); line-height: 1.3; }
+    .hairline { border-top: 1px solid var(--border); }
+    .button {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1.5px solid var(--fg);
+      background: var(--fg);
+      color: var(--bg);
+      padding: 12px 18px;
+      font-family: var(--font-label);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      border-radius: var(--radius);
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+    }
+    .button:hover { transform: translateY(-2px); background: var(--accent); color: var(--surface); }
+    .button.secondary { background: transparent; color: var(--fg); }
+    .button.secondary:hover { background: var(--fg); color: var(--bg); }
+
+    .topbar {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 30;
+      background: color-mix(in oklch, var(--bg) 92%, transparent);
+      backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--fg);
+    }
+    .topbar-inner {
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 22px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-label);
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .brand img { inline-size: 190px; block-size: auto; }
+    .navlinks { display: flex; gap: 22px; justify-content: center; font-family: var(--font-label); font-size: 13px; font-weight: 750; }
+    .navlinks a { color: var(--muted); }
+    .navlinks a:hover { color: var(--fg); text-decoration: underline; text-underline-offset: 4px; }
+    .top-actions { display: flex; justify-content: end; }
+    .ticker {
+      border-bottom: 1.5px solid var(--fg);
+      overflow: hidden;
+      background: var(--accent);
+      color: var(--surface);
+      font-family: var(--font-label);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .ticker span {
+      display: inline-block;
+      padding: 10px 24px;
+      animation: ticker 22s linear infinite;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    .hero {
+      min-height: calc(100vh - 118px);
+      display: grid;
+      align-items: stretch;
+      border-top: 0;
+      padding-block: 0;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(320px, 0.72fr);
+      min-height: calc(100vh - 118px);
+      border-inline: 1.5px solid var(--fg);
+    }
+    .hero-copy { padding: clamp(44px, 7vw, 92px); display: flex; flex-direction: column; justify-content: space-between; gap: 52px; }
+    .hero h1 {
+      font-size: clamp(42px, 6.2vw, 96px);
+      line-height: 0.96;
+      letter-spacing: 0;
+      max-width: 13.5ch;
+    }
+    body[data-scale="compact"] .hero h1 { font-size: clamp(36px, 5.2vw, 78px); max-width: 15ch; }
+    body[data-scale="spacious"] .hero h1 { font-size: clamp(46px, 6.8vw, 102px); max-width: 12.6ch; }
+    .hero h1 strong { color: var(--accent); font-weight: inherit; }
+    .hero-side {
+      border-inline-start: 1.5px solid var(--fg);
+      display: grid;
+      grid-template-rows: 1fr auto;
+      min-height: 100%;
+      background: var(--surface);
+    }
+    .diagram {
+      position: relative;
+      min-height: 430px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 44% 38%, var(--accent-soft), transparent 36%),
+        var(--paper-warm);
+    }
+    .diagram img {
+      position: absolute;
+      inset: 9%;
+      inline-size: 82%;
+      block-size: 82%;
+      object-fit: contain;
+      filter: saturate(.72) contrast(1.08);
+      mix-blend-mode: multiply;
+    }
+    .diagram::before,
+    .diagram::after {
+      content: "";
+      position: absolute;
+      border: 1.5px solid var(--fg);
+      border-radius: 50%;
+      aspect-ratio: 1;
+    }
+    .diagram::before { inline-size: 64%; inset-inline-start: 19%; inset-block-start: 14%; }
+    .diagram::after { inline-size: 39%; inset-inline-start: 30%; inset-block-start: 28%; border-style: dashed; }
+    .node {
+      position: absolute;
+      inline-size: 18px;
+      block-size: 18px;
+      border-radius: 50%;
+      background: var(--fg);
+      box-shadow: 0 0 0 9px var(--bg);
+    }
+    .node.one { inset-inline-start: 20%; inset-block-start: 20%; }
+    .node.two { inset-inline-start: 67%; inset-block-start: 28%; }
+    .node.three { inset-inline-start: 50%; inset-block-start: 66%; }
+    .node.four { inset-inline-start: 30%; inset-block-start: 53%; background: var(--accent); }
+    .diagram-label {
+      position: absolute;
+      inset-inline: 30px;
+      inset-block-end: 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+    }
+    .hero-card {
+      border-top: 1.5px solid var(--fg);
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+    }
+    .hero-card p { font-size: 23px; line-height: 1.2; }
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1.5px solid var(--fg);
+    }
+    .hero-meta > div { padding: 18px; border-inline-end: 1.5px solid var(--fg); }
+    .hero-meta > div:last-child { border-inline-end: 0; }
+    .hero-meta b { display: block; font-size: 28px; line-height: 1; font-family: var(--font-label); }
+    .hero-meta span { display: block; margin-top: 7px; color: var(--muted); font-size: 13px; font-family: var(--font-label); }
+
+    .partners {
+      padding-block: 28px;
+      border-top: 1.5px solid var(--fg);
+      background: var(--surface);
+    }
+    .partner-grid {
+      display: grid;
+      grid-template-columns: 190px repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1.5px solid var(--fg);
+      border-inline-end: 0;
+    }
+    .partner-grid > div {
+      min-height: 86px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      border-inline-end: 1.5px solid var(--fg);
+      font-family: var(--font-label);
+      font-weight: 850;
+      text-align: center;
+    }
+    .partner-grid .label { place-items: center start; text-align: start; color: var(--fg); }
+    .partner-logo {
+      background: color-mix(in oklch, var(--surface) 88%, var(--bg));
+      min-height: 98px;
+    }
+    .partner-logo img {
+      inline-size: min(74%, 190px);
+      max-block-size: 54px;
+      object-fit: contain;
+      filter: grayscale(1) contrast(1.08);
+      mix-blend-mode: multiply;
+    }
+    .partner-logo.rrrg img,
+    .partner-logo.wsa img {
+      inline-size: min(48%, 92px);
+      max-block-size: 64px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.86fr 1.14fr;
+      gap: clamp(32px, 6vw, 84px);
+      align-items: start;
+    }
+    .section-title { font-size: clamp(36px, 4.6vw, 68px); line-height: 1; letter-spacing: 0; }
+    body[data-scale="compact"] .section-title { font-size: clamp(31px, 3.7vw, 54px); line-height: 1.04; }
+    body[data-scale="spacious"] .section-title { font-size: clamp(39px, 5vw, 76px); }
+    .problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); border: 1.5px solid var(--fg); background: var(--surface); }
+    .problem-card { min-height: 248px; padding: 28px; border-inline-end: 1.5px solid var(--fg); border-block-end: 1.5px solid var(--fg); display: flex; flex-direction: column; justify-content: space-between; }
+    .problem-card:nth-child(2n) { border-inline-end: 0; }
+    .problem-card:nth-last-child(-n+2) { border-block-end: 0; }
+    .problem-card h3 { font-size: 27px; line-height: 1.05; }
+    .problem-card p { color: var(--muted); font-family: var(--font-label); font-size: 14px; }
+
+    .quote-band {
+      background: var(--fg);
+      color: var(--bg);
+      padding-block: clamp(70px, 12vw, 148px);
+      border-top: 0;
+    }
+    .quote-band blockquote {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(32px, 4.9vw, 74px);
+      line-height: 1.04;
+      letter-spacing: 0;
+      font-family: var(--font-display);
+      border-inline-start: 10px solid var(--accent);
+      padding-inline-start: clamp(20px, 4vw, 42px);
+    }
+    body[data-scale="compact"] .quote-band blockquote { font-size: clamp(28px, 3.9vw, 58px); line-height: 1.08; }
+    body[data-scale="spacious"] .quote-band blockquote { font-size: clamp(34px, 5.3vw, 80px); }
+
+    .impact-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(34px, 7vw, 92px);
+      align-items: start;
+    }
+    .counter-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1.5px solid var(--fg); background: var(--surface); }
+    .counter {
+      min-height: 210px;
+      padding: 26px;
+      border-inline-end: 1.5px solid var(--fg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .counter:last-child { border-inline-end: 0; }
+    .counter strong {
+      display: block;
+      font-family: var(--font-label);
+      font-size: clamp(38px, 5.4vw, 68px);
+      line-height: 0.92;
+      font-variant-numeric: tabular-nums;
+    }
+    .counter span { font-family: var(--font-label); color: var(--muted); font-size: 13px; font-weight: 750; }
+    .viz-board {
+      border: 1.5px solid var(--fg);
+      background: var(--surface);
+    }
+    .viz-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px;
+      border-bottom: 1.5px solid var(--fg);
+      align-items: center;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 158px 1fr;
+      align-items: center;
+      min-height: 66px;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      gap: 18px;
+      font-family: var(--font-label);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .bar-row:last-child { border-bottom: 0; }
+    .bar {
+      block-size: 24px;
+      border: 1px solid var(--fg);
+      display: grid;
+      grid-template-columns: var(--a) var(--b) var(--c);
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .bar i { display: block; transform-origin: 0 50%; transform: scaleX(0); transition: transform 900ms cubic-bezier(.2,.8,.2,1); }
+    .bar.in-view i { transform: scaleX(1); }
+    .bar i:nth-child(1) { background: var(--fg); }
+    .bar i:nth-child(2) { background: var(--accent); }
+    .bar i:nth-child(3) { background: color-mix(in oklch, var(--accent) 45%, var(--bg)); }
+
+    .map-shell {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      border: 1.5px solid var(--fg);
+      background: var(--surface);
+    }
+    .map {
+      min-height: 560px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, color-mix(in oklch, var(--accent) 10%, transparent), transparent 48%),
+        var(--paper-warm);
+    }
+    .map svg { inline-size: 100%; block-size: 100%; position: absolute; inset: 0; }
+    .sa-map-image {
+      opacity: .88;
+      filter: sepia(.18) saturate(.75) contrast(1.16);
+      mix-blend-mode: multiply;
+    }
+    .map-focus {
+      fill: color-mix(in oklch, var(--accent) 17%, transparent);
+      stroke: var(--fg);
+      stroke-width: 1.5;
+      stroke-dasharray: 9 8;
+      vector-effect: non-scaling-stroke;
+      opacity: 0;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: scale(.84);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+    .map-focus.is-active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .map-gridline {
+      stroke: color-mix(in oklch, var(--fg) 24%, transparent);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+    }
+    .map-label {
+      fill: var(--muted);
+      font-family: var(--font-label);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .map-label.country {
+      fill: color-mix(in oklch, var(--fg) 54%, transparent);
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .site {
+      position: absolute;
+      inline-size: 18px;
+      block-size: 18px;
+      border: 1.5px solid var(--fg);
+      background: var(--surface);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+    .site:hover,
+    .site:focus-visible,
+    .site.is-active {
+      background: var(--accent);
+      box-shadow: 0 0 0 10px var(--accent-soft);
+      transform: translate(-50%, -50%) scale(1.12);
+      outline: 0;
+    }
+    .site.one { inset-inline-start: 59.9%; inset-block-start: 68.5%; }
+    .site.two { inset-inline-start: 47.8%; inset-block-start: 57.8%; }
+    .site.three { inset-inline-start: 60.4%; inset-block-start: 81.5%; }
+    .map-panel {
+      border-inline-start: 1.5px solid var(--fg);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .map-panel h3 { font-size: 34px; line-height: 1.02; }
+
+    .photo-break {
+      padding-block: 0;
+      border-top: 1.5px solid var(--fg);
+    }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      border-inline: 1.5px solid var(--fg);
+      min-height: 620px;
+    }
+    .photo {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .photo img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      filter: saturate(.84) sepia(.08) contrast(1.04);
+    }
+    .photo::after {
+      content: "SpekTech source imagery";
+      position: absolute;
+      inset-inline-start: 28px;
+      inset-block-end: 24px;
+      font-family: var(--font-label);
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--surface);
+      font-weight: 850;
+      background: color-mix(in oklch, var(--fg) 72%, transparent);
+      padding: 8px 10px;
+    }
+    .case-copy {
+      border-inline-start: 1.5px solid var(--fg);
+      padding: clamp(34px, 5vw, 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 44px;
+      background: var(--surface);
+    }
+    .case-copy h2 { font-size: clamp(38px, 4.9vw, 68px); line-height: 1; }
+
+    .wall-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1.5px solid var(--fg);
+      background: var(--surface);
+    }
+    .wall-cell {
+      min-height: 330px;
+      padding: 0;
+      border-inline-end: 1.5px solid var(--fg);
+      border-block-end: 1.5px solid var(--fg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-family: var(--font-label);
+      overflow: hidden;
+    }
+    .wall-cell:nth-child(3n) { border-inline-end: 0; }
+    .wall-cell:nth-last-child(-n+3) { border-block-end: 0; }
+    .wall-media {
+      aspect-ratio: 1 / .86;
+      border-bottom: 1.5px solid var(--fg);
+      background: var(--paper-warm);
+      overflow: hidden;
+    }
+    .wall-media img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      filter: grayscale(.18) saturate(.82) contrast(1.06);
+    }
+    .wall-copy {
+      min-height: 138px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .wall-cell b { font-size: 21px; line-height: 1.05; }
+    .wall-cell span { color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 800; }
+    .wall-cell p { color: var(--muted); font-size: 13px; line-height: 1.25; }
+    .wall-cell.org {
+      min-height: 244px;
+      background: color-mix(in oklch, var(--surface) 82%, var(--bg));
+    }
+    .wall-cell.org .wall-media {
+      min-height: 138px;
+      aspect-ratio: auto;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+    }
+    .wall-cell.org .wall-media img {
+      inline-size: min(180px, 84%);
+      block-size: auto;
+      max-block-size: 74px;
+      object-fit: contain;
+      filter: grayscale(1) contrast(1.08);
+      mix-blend-mode: multiply;
+    }
+    body[data-theme="dark"] .wall-cell.org .wall-media img {
+      filter: grayscale(1) invert(1) contrast(1.05);
+      mix-blend-mode: screen;
+    }
+    .wall-cell.org .wall-copy { min-height: 104px; }
+
+    .faq-list { border-top: 1.5px solid var(--fg); }
+    .faq-item { border-bottom: 1.5px solid var(--fg); }
+    .faq-q {
+      inline-size: 100%;
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 0;
+      background: transparent;
+      border: 0;
+      text-align: start;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.5vw, 32px);
+    }
+    .faq-q::after { content: "+"; font-family: var(--font-label); }
+    .faq-item[open] .faq-q::after { content: "-"; }
+    .faq-a {
+      max-width: 68ch;
+      padding: 0 0 28px;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    .cta {
+      border-top: 1.5px solid var(--fg);
+      padding-block: clamp(70px, 12vw, 150px);
+      text-align: center;
+      background: var(--fg);
+      color: var(--bg);
+    }
+    .cta h2 {
+      max-width: 900px;
+      margin-inline: auto;
+      font-size: clamp(40px, 6vw, 86px);
+      line-height: 0.98;
+    }
+    body[data-scale="compact"] .cta h2 { font-size: clamp(34px, 4.8vw, 68px); line-height: 1.03; }
+    body[data-scale="spacious"] .cta h2 { font-size: clamp(42px, 6.3vw, 94px); }
+    .cta p { max-width: 680px; margin: 24px auto 34px; color: color-mix(in oklch, var(--bg) 78%, transparent); font-size: 24px; }
+    .cta .button { background: var(--bg); color: var(--fg); border-color: var(--bg); }
+    .footer {
+      padding-block: 34px;
+      border-top: 1.5px solid var(--border);
+      background: var(--fg);
+      color: var(--bg);
+      font-family: var(--font-label);
+      font-size: 13px;
+    }
+    .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+    .footer a { text-decoration: underline; text-underline-offset: 4px; }
+
+    .tweaks {
+      position: fixed;
+      inset-inline-end: 16px;
+      inset-block-end: 16px;
+      z-index: 40;
+      width: min(340px, calc(100vw - 32px));
+      border: 1.5px solid var(--fg);
+      background: var(--surface);
+      color: var(--fg);
+      box-shadow: 8px 8px 0 var(--fg);
+      font-family: var(--font-label);
+    }
+    .tweaks summary {
+      padding: 14px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .tweak-body { border-top: 1.5px solid var(--fg); padding: 14px; display: grid; gap: 14px; }
+    .seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--fg); }
+    .seg button { border: 0; border-inline-end: 1px solid var(--fg); background: transparent; min-height: 38px; font-size: 12px; font-weight: 800; }
+    .seg button:last-child { border-inline-end: 0; }
+    .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+    .seg.two { grid-template-columns: repeat(2, 1fr); }
+    .tweak-group { display: grid; gap: 8px; }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 700ms ease, transform 700ms ease; }
+    .reveal.in-view { opacity: 1; transform: translateY(0); }
+    body[data-motion="reduced"] .ticker span { animation: none; }
+    body[data-motion="reduced"] .reveal,
+    body[data-motion="reduced"] .bar i,
+    body[data-motion="reduced"] .button { transition: none; }
+    body[data-motion="reduced"] .reveal { opacity: 1; transform: none; }
+
+    @media (max-width: 980px) {
+      .topbar-inner { grid-template-columns: 1fr auto; }
+      .navlinks { display: none; }
+      .hero-grid,
+      .split,
+      .impact-layout,
+      .map-shell,
+      .photo-grid { grid-template-columns: 1fr; }
+      .hero-side,
+      .case-copy,
+      .map-panel { border-inline-start: 0; border-top: 1.5px solid var(--fg); }
+      .hero-grid,
+      .photo-grid { border-inline: 0; }
+      .partner-grid { grid-template-columns: 1fr 1fr; }
+      .partner-grid .label { grid-column: 1 / -1; }
+      .counter-grid,
+      .problem-grid,
+      .wall-grid { grid-template-columns: 1fr; }
+      .counter,
+      .problem-card,
+      .wall-cell { border-inline-end: 0; border-block-end: 1.5px solid var(--fg); }
+      .counter:last-child,
+      .problem-card:last-child,
+      .wall-cell:last-child { border-block-end: 0; }
+      .wall-cell:nth-last-child(-n+3) { border-block-end: 1.5px solid var(--fg); }
+      .wall-cell:last-child { border-block-end: 0; }
+      .bar-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      body { font-size: 16px; }
+      .top-actions { display: none; }
+      .brand img { inline-size: 150px; }
+      .hero-copy { padding: 34px 20px; }
+      .hero-meta { grid-template-columns: 1fr; }
+      .hero-meta > div { border-inline-end: 0; border-block-end: 1.5px solid var(--fg); }
+      .hero-meta > div:last-child { border-block-end: 0; }
+      .diagram { min-height: 340px; }
+      .partner-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ticker" aria-label="Announcement">
+    <span>SpekTech is nominated for WSA 2023 - Environment &amp; Green Energy - South Africa - SpekTech is nominated for WSA 2023 - Environment &amp; Green Energy - South Africa - </span>
+  </div>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="#top" aria-label="SpekTech home">
+        <img src="assets/spektech-logo.svg" alt="SpekTech" />
+      </a>
+      <nav class="navlinks" aria-label="Main navigation">
+        <a href="#solution">Solution</a>
+        <a href="#impact">Impact</a>
+        <a href="#sites">Sites</a>
+        <a href="#team">Team</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="top-actions"><a class="button secondary" href="#cta">Book a demo</a></div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="section hero" data-od-id="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="reveal">
+            <p class="label">Interactive annual report - Climate impact platform</p>
+            <h1>Technology for land restoration and <strong>climate impact</strong> in Africa.</h1>
+          </div>
+          <div class="reveal">
+            <p class="lead">SpekTech connects funders, project managers, and communities to land restoration initiatives, combining eCommerce fundraising, accountable fund distribution, real-time monitoring, and blockchain-verified reporting in one platform.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;">
+              <a class="button" href="#cta">Schedule a demo</a>
+              <a class="button secondary" href="#impact">Read the impact story</a>
+            </div>
+          </div>
+        </div>
+        <aside class="hero-side reveal">
+          <div class="diagram" aria-label="SpekTech stakeholder network diagram">
+            <img src="assets/diagram-large.svg" alt="" />
+            <span class="node one"></span><span class="node two"></span><span class="node three"></span><span class="node four"></span>
+            <div class="diagram-label">
+              <p class="label">funds - data - verification</p>
+              <p class="mono">01/09</p>
+            </div>
+          </div>
+          <div class="hero-card">
+            <p>We combat climate change in Africa with eCommerce and smart technology to drive green growth and sustainable investment.</p>
+            <div class="hero-meta">
+              <div><b class="mono">40k</b><span>Spekboom trees sold</span></div>
+              <div><b class="mono">40</b><span>Merchants connected</span></div>
+              <div><b class="mono">10k+</b><span>Conscious consumers</span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="partners" data-od-id="partners">
+      <div class="container partner-grid reveal">
+        <div class="label">Strategic partners</div>
+        <div class="partner-logo"><img src="assets/village-capital-logo.png" alt="Village Capital" /></div>
+        <div class="partner-logo rrrg"><img src="assets/rrrg-logo.png" alt="RRRG" /></div>
+        <div class="partner-logo"><img src="assets/moodys-logo.png" alt="Moody's" /></div>
+        <div class="partner-logo wsa"><img src="assets/wsa-2023-logo.png" alt="WSA 2023" /></div>
+      </div>
+    </section>
+
+    <section class="section" id="solution" data-od-id="solution">
+      <div class="container split">
+        <div class="reveal">
+          <p class="label">The SpekTech solution</p>
+          <h2 class="section-title">An all-in-one platform for land restoration projects.</h2>
+        </div>
+        <div class="problem-grid reveal">
+          <article class="problem-card">
+            <p class="label">Problem 01</p>
+            <h3>Critical gap in climate finance for climate mitigation and adaptation in Africa</h3>
+            <p>SpekTech opens new revenue streams through eCommerce and funding workflows.</p>
+          </article>
+          <article class="problem-card">
+            <p class="label">Problem 02</p>
+            <h3>Limited climate data</h3>
+            <p>Remote sensing and machine learning help map, monitor, and measure climate impact data in real time.</p>
+          </article>
+          <article class="problem-card">
+            <p class="label">Problem 03</p>
+            <h3>Ineffective reporting and verification mechanisms</h3>
+            <p>Blockchain-verified data builds trust with stakeholders and supports transparent reporting.</p>
+          </article>
+          <article class="problem-card">
+            <p class="label">Problem 04</p>
+            <h3>Smallholder inclusion in the climate impact market</h3>
+            <p>Funding distribution and digital verification mechanisms connect stakeholders beyond carbon market limitations.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote-band" data-od-id="pull-quote">
+      <div class="container reveal">
+        <p class="label" style="color:var(--bg);margin-bottom:28px;">Mission statement</p>
+        <blockquote>To empower land restoration and climate impact initiatives through technology, ensuring efficiency, transparency, and sustainable impact.</blockquote>
+      </div>
+    </section>
+
+    <section class="section" id="impact" data-od-id="impact">
+      <div class="container impact-layout">
+        <div class="reveal">
+          <p class="label">Impact and scale</p>
+          <h2 class="section-title">A platform built around the gaps holding restoration back.</h2>
+          <p class="lead" style="margin-top:24px;">Africa faces a critical gap in climate finance, limited environmental data infrastructure, and weak verification mechanisms for net-zero commitments. SpekTech combines eCommerce fundraising, transparent fund distribution, real-time monitoring, and blockchain-verified reporting into one modular system.</p>
+        </div>
+        <div class="reveal">
+          <div class="counter-grid">
+            <div class="counter"><strong class="num" data-count="40000">0</strong><span>Spekboom trees sold through the platform</span></div>
+            <div class="counter"><strong class="num" data-count="40">0</strong><span>Merchants with climate-conscious customers</span></div>
+            <div class="counter"><strong class="num" data-count="10000">0</strong><span>Environmentally conscious consumers</span></div>
+          </div>
+          <div class="viz-board" style="margin-top:28px;">
+            <div class="viz-head">
+              <p class="label">Barrier taxonomy from current copy</p>
+              <p class="mono" style="font-size:13px;color:var(--muted);">qualitative - 4 themes</p>
+            </div>
+            <div class="bar-row">
+              <span>Climate finance</span>
+              <div class="bar" style="--a:42%;--b:35%;--c:23%;"><i></i><i></i><i></i></div>
+            </div>
+            <div class="bar-row">
+              <span>Climate data</span>
+              <div class="bar" style="--a:30%;--b:50%;--c:20%;"><i></i><i></i><i></i></div>
+            </div>
+            <div class="bar-row">
+              <span>Verification</span>
+              <div class="bar" style="--a:28%;--b:32%;--c:40%;"><i></i><i></i><i></i></div>
+            </div>
+            <div class="bar-row">
+              <span>Smallholders</span>
+              <div class="bar" style="--a:36%;--b:27%;--c:37%;"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sites" data-od-id="project-sites">
+      <div class="container">
+        <div class="split" style="margin-bottom:44px;">
+          <div class="reveal">
+            <p class="label">Project sites map</p>
+            <h2 class="section-title">Africa-first climate infrastructure.</h2>
+          </div>
+          <p class="lead reveal">SpekTech operates from Johannesburg, South Africa, with a focus on semi-arid regions across the continent. The platform supports climate impact initiatives that carry both environmental and social value, extending beyond the carbon market into broader ecosystem restoration.</p>
+        </div>
+        <div class="map-shell reveal">
+          <div class="map" aria-label="Stylized choropleth map of Southern Africa and SpekTech project regions">
+            <svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <line class="map-gridline" x1="102" y1="128" x2="642" y2="128"/>
+              <line class="map-gridline" x1="102" y1="256" x2="642" y2="256"/>
+              <line class="map-gridline" x1="102" y1="384" x2="642" y2="384"/>
+              <line class="map-gridline" x1="180" y1="62" x2="180" y2="458"/>
+              <line class="map-gridline" x1="360" y1="62" x2="360" y2="458"/>
+              <line class="map-gridline" x1="540" y1="62" x2="540" y2="458"/>
+              <image class="sa-map-image" href="assets/southern-africa-context-map.svg" x="44" y="22" width="632" height="470" preserveAspectRatio="xMidYMid meet"/>
+              <ellipse class="map-focus is-active" data-focus="johannesburg" cx="431" cy="356" rx="48" ry="34"/>
+              <ellipse class="map-focus" data-focus="southern-africa" cx="344" cy="301" rx="134" ry="92"/>
+              <ellipse class="map-focus" data-focus="eastern-cape" cx="435" cy="424" rx="74" ry="42"/>
+              <text class="map-label country" x="158" y="125">Angola</text>
+              <text class="map-label country" x="392" y="136">Zambia</text>
+              <text class="map-label country" x="503" y="188">Malawi</text>
+              <text class="map-label country" x="246" y="292">Botswana</text>
+              <text class="map-label country" x="520" y="300">Mozambique</text>
+              <text class="map-label country" x="316" y="424">South Africa</text>
+              <text class="map-label" x="444" y="350">Johannesburg</text>
+              <text class="map-label" x="218" y="315">Southern Africa corridor</text>
+              <text class="map-label" x="454" y="450">Eastern Cape thicket</text>
+            </svg>
+            <button class="site one is-active" data-focus="johannesburg" data-site="Johannesburg, South Africa" data-detail="SpekTech is headquartered in Johannesburg and built for African climate impact initiatives." aria-label="Johannesburg site"></button>
+            <button class="site two" data-focus="southern-africa" data-site="Southern Africa restoration corridor" data-detail="The platform is designed for Southern African semi-arid regions where land degradation, restoration finance, and climate vulnerability intersect." aria-label="Southern Africa restoration corridor"></button>
+            <button class="site three" data-focus="eastern-cape" data-site="Eastern Cape thicket" data-detail="ReSpek Nature demonstrates how consumers can connect to verified spekboom thicket restoration projects and offset carbon emissions with a click." aria-label="Eastern Cape thicket focus"></button>
+          </div>
+          <aside class="map-panel">
+            <div>
+              <p class="label">Selected site</p>
+              <h3 id="site-title">Johannesburg, South Africa</h3>
+            </div>
+            <p id="site-detail" class="lead" style="font-size:22px;">SpekTech is headquartered in Johannesburg and built for African climate impact initiatives.</p>
+            <p class="mono" style="font-size:13px;color:var(--muted);">Platform focus: African ecosystem restoration</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="photo-break" data-od-id="case-study">
+      <div class="container photo-grid">
+        <div class="photo" role="img" aria-label="Spekboom restoration landscape">
+          <img src="assets/spekboom-field.jpg" alt="Spekboom restoration landscape from the original SpekTech site" />
+        </div>
+        <article class="case-copy reveal">
+          <div>
+            <p class="label">Case study</p>
+            <h2>ReSpek Nature</h2>
+          </div>
+          <p class="lead">ReSpek Nature is a trusted platform that allows you to offset your carbon emissions with a click.</p>
+          <p>As an active SpekTech case study, ReSpek Nature shows how end consumers can connect to verified land restoration projects while the platform handles fundraising, transparent fund distribution, monitoring, and reporting.</p>
+          <a class="button secondary" href="https://respeknature.org/" target="_blank" rel="noreferrer">Visit ReSpek Nature</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="team" data-od-id="team-wall">
+      <div class="container">
+        <div class="split" style="margin-bottom:44px;">
+          <div class="reveal">
+            <p class="label">People, advisors, supporters</p>
+            <h2 class="section-title">The people behind SpekTech.</h2>
+          </div>
+          <p class="lead reveal">SpekTech was founded by Ephraim Moss, software architect and CEO, and Michalya Schonwald Moss, co-founder leading business development and ESG impact. Its advisory board adds expertise in clean energy finance, digital verification, SaaS, and growth.</p>
+        </div>
+        <div class="wall-grid reveal">
+          <article class="wall-cell person">
+            <div class="wall-media"><img src="assets/ephraim-moss.jpeg" alt="Ephraim Moss" /></div>
+            <div class="wall-copy"><span>Founder and CEO</span><b>Ephraim Moss</b><p>Software Architect</p></div>
+          </article>
+          <article class="wall-cell person">
+            <div class="wall-media"><img src="assets/michalya-schonwald-moss.jpeg" alt="Michalya Schonwald Moss" /></div>
+            <div class="wall-copy"><span>Co-Founder</span><b>Michalya Schonwald Moss</b><p>Business Development and ESG Impact</p></div>
+          </article>
+          <article class="wall-cell person">
+            <div class="wall-media"><img src="assets/david-marais.png" alt="David Marais" /></div>
+            <div class="wall-copy"><span>Advisory Board</span><b>David Marais</b><p>NED ReSpek Nature and CFO of decarb.earth</p></div>
+          </article>
+          <article class="wall-cell person">
+            <div class="wall-media"><img src="assets/gur-geva.png" alt="Gur Geva" /></div>
+            <div class="wall-copy"><span>Advisory Board</span><b>Gur Geva</b><p>CEO at iiDENTIFii</p></div>
+          </article>
+          <article class="wall-cell person">
+            <div class="wall-media"><img src="assets/ari-pheiffer.png" alt="Ari Pheiffer" /></div>
+            <div class="wall-copy"><span>Advisory Board</span><b>Ari Pheiffer</b><p>NED ReSpek Nature and COO Spitfire Inbound</p></div>
+          </article>
+          <article class="wall-cell org">
+            <div class="wall-media"><img src="assets/village-capital-logo.png" alt="Village Capital" /></div>
+            <div class="wall-copy"><span>Strategic partner</span><b>Village Capital</b><p>Ecosystem restoration accelerator</p></div>
+          </article>
+          <article class="wall-cell org">
+            <div class="wall-media"><img src="assets/rrrg-logo.png" alt="RRRG" /></div>
+            <div class="wall-copy"><span>Strategic partner</span><b>RRRG</b><p>Restoration and resilience partner</p></div>
+          </article>
+          <article class="wall-cell org">
+            <div class="wall-media"><img src="assets/moodys-logo.png" alt="Moody's" /></div>
+            <div class="wall-copy"><span>Strategic partner</span><b>Moody's</b><p>Climate and finance network</p></div>
+          </article>
+          <article class="wall-cell org">
+            <div class="wall-media"><img src="assets/wsa-2023-logo.png" alt="WSA 2023" /></div>
+            <div class="wall-copy"><span>Recognition</span><b>WSA 2023</b><p>Environment and Green Energy nominee from South Africa</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" data-od-id="faq">
+      <div class="container split">
+        <div class="reveal">
+          <p class="label">Frequently asked</p>
+          <h2 class="section-title">Frequently asked questions.</h2>
+        </div>
+        <div class="faq-list reveal">
+          <details class="faq-item" open>
+            <summary class="faq-q">What is SpekTech?</summary>
+            <div class="faq-a">SpekTech connects online consumers, businesses, and funders to land restoration and climate impact projects, including their associated carbon offsets, primarily in semi-arid regions of Africa.</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-q">How does SpekTech work?</summary>
+            <div class="faq-a">SpekTech Raise generates funding through eCommerce integrations and subscription management. SpekTrack follows fund distribution in real time. SpekTech Monitor adds analytics, KPI tracking, automated reports, and blockchain-verified records.</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-q">Who is SpekTech designed for?</summary>
+            <div class="faq-a">Project managers use it to streamline operations. Donors use it to see where funds go and what impact they make. Stakeholders use the reporting and blockchain-verified data for transparency and accountability.</div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-q">Where is SpekTech based?</summary>
+            <div class="faq-a">SpekTech is headquartered in Johannesburg, South Africa. It was founded by Ephraim Moss, a software architect, and Michalya Schonwald Moss, a business development and ESG impact specialist.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="cta" data-od-id="cta">
+      <div class="container reveal">
+        <p class="label" style="color:var(--bg);margin-bottom:26px;">Discover how SpekTech can transform your climate impact today</p>
+        <h2>See SpekTech in action.</h2>
+        <p>Schedule a demo to learn how SpekTech can help your organisation raise funds, distribute capital transparently, and report verified climate impact from one platform.</p>
+        <a class="button" href="mailto:hello@spektech.io?subject=Website%20Enquiry">Schedule a demo</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <p>Spek Tech Pty Ltd - All Rights Reserved - Johannesburg, South Africa</p>
+      <p><a href="mailto:hello@spektech.io">hello@spektech.io</a> - <a href="tel:+27726796838">+27 72 679 6838</a></p>
+    </div>
+  </footer>
+
+  <details class="tweaks">
+    <summary>Tweaks</summary>
+    <div class="tweak-body">
+      <div class="tweak-group">
+        <p class="label">Report palette</p>
+        <div class="seg" role="group" aria-label="Theme selector">
+          <button type="button" data-theme-option="paper" aria-pressed="true">Paper</button>
+          <button type="button" data-theme-option="field" aria-pressed="false">Field</button>
+          <button type="button" data-theme-option="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+      <div class="tweak-group">
+        <p class="label">Type rhythm</p>
+        <div class="seg" role="group" aria-label="Type scale selector">
+          <button type="button" data-scale-option="compact" aria-pressed="false">Compact</button>
+          <button type="button" data-scale-option="default" aria-pressed="true">Default</button>
+          <button type="button" data-scale-option="spacious" aria-pressed="false">Wide</button>
+        </div>
+      </div>
+      <div class="tweak-group">
+        <p class="label">Motion</p>
+        <div class="seg two" role="group" aria-label="Motion selector">
+          <button type="button" data-motion-option="full" aria-pressed="true">Full</button>
+          <button type="button" data-motion-option="reduced" aria-pressed="false">Reduced</button>
+        </div>
+      </div>
+      <div class="tweak-group">
+        <p class="label">Map cycle</p>
+        <div class="seg two" role="group" aria-label="Map cycle selector">
+          <button type="button" data-cycle-option="on" aria-pressed="true">On</button>
+          <button type="button" data-cycle-option="off" aria-pressed="false">Off</button>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <script>
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "theme": "paper",
+      "scale": "default",
+      "motion": "full",
+      "mapCycle": "on"
+    }/*EDITMODE-END*/;
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll('.reveal, .bar').forEach((el) => revealObserver.observe(el));
+
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = Number(el.dataset.count || 0);
+        const duration = 1100;
+        const start = performance.now();
+        const formatter = new Intl.NumberFormat('en-US');
+        const tick = (now) => {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = formatter.format(Math.round(target * eased));
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        countObserver.unobserve(el);
+      });
+    }, { threshold: 0.4 });
+
+    document.querySelectorAll('[data-count]').forEach((el) => countObserver.observe(el));
+
+    const siteTitle = document.getElementById('site-title');
+    const siteDetail = document.getElementById('site-detail');
+    const sites = Array.from(document.querySelectorAll('.site'));
+    const mapFocusRegions = Array.from(document.querySelectorAll('.map-focus'));
+    let activeSiteIndex = sites.findIndex((site) => site.classList.contains('is-active'));
+    let mapCyclePaused = false;
+    let mapCycleEnabled = TWEAK_DEFAULTS.mapCycle === 'on';
+
+    const activateSite = (site) => {
+      const focusKey = site.dataset.focus;
+      sites.forEach((other) => other.classList.toggle('is-active', other === site));
+      mapFocusRegions.forEach((region) => {
+        region.classList.toggle('is-active', region.dataset.focus === focusKey);
+      });
+      siteTitle.textContent = site.dataset.site;
+      siteDetail.textContent = site.dataset.detail;
+      activeSiteIndex = sites.indexOf(site);
+    };
+
+    sites.forEach((site) => {
+      site.addEventListener('click', () => activateSite(site));
+      site.addEventListener('pointerenter', () => {
+        mapCyclePaused = true;
+        activateSite(site);
+      });
+      site.addEventListener('pointerleave', () => {
+        mapCyclePaused = false;
+      });
+      site.addEventListener('focus', () => {
+        mapCyclePaused = true;
+        activateSite(site);
+      });
+      site.addEventListener('blur', () => {
+        mapCyclePaused = false;
+      });
+    });
+
+    window.setInterval(() => {
+      if (!mapCycleEnabled || mapCyclePaused || sites.length === 0) return;
+      activeSiteIndex = (activeSiteIndex + 1) % sites.length;
+      activateSite(sites[activeSiteIndex]);
+    }, 3200);
+
+    const storedTweaks = JSON.parse(localStorage.getItem('spektech-report-tweaks') || '{}');
+    const tweakState = { ...TWEAK_DEFAULTS, ...storedTweaks };
+
+    const persistTweaks = () => {
+      localStorage.setItem('spektech-report-tweaks', JSON.stringify(tweakState));
+    };
+
+    const setPressed = (selector, activeValue) => {
+      document.querySelectorAll(selector).forEach((button) => {
+        const key = button.dataset.themeOption || button.dataset.scaleOption || button.dataset.motionOption || button.dataset.cycleOption;
+        button.setAttribute('aria-pressed', String(key === activeValue));
+      });
+    };
+
+    const applyTheme = (theme) => {
+      document.body.dataset.theme = theme === 'paper' ? '' : theme;
+      tweakState.theme = theme;
+      setPressed('[data-theme-option]', theme);
+      persistTweaks();
+    };
+
+    const applyScale = (scale) => {
+      document.body.dataset.scale = scale === 'default' ? '' : scale;
+      tweakState.scale = scale;
+      setPressed('[data-scale-option]', scale);
+      persistTweaks();
+    };
+
+    const applyMotion = (motion) => {
+      document.body.dataset.motion = motion === 'full' ? '' : motion;
+      tweakState.motion = motion;
+      setPressed('[data-motion-option]', motion);
+      persistTweaks();
+    };
+
+    const applyMapCycle = (cycle) => {
+      mapCycleEnabled = cycle === 'on';
+      tweakState.mapCycle = cycle;
+      setPressed('[data-cycle-option]', cycle);
+      persistTweaks();
+    };
+
+    document.querySelectorAll('[data-theme-option]').forEach((button) => {
+      button.addEventListener('click', () => applyTheme(button.dataset.themeOption));
+    });
+
+    document.querySelectorAll('[data-scale-option]').forEach((button) => {
+      button.addEventListener('click', () => applyScale(button.dataset.scaleOption));
+    });
+
+    document.querySelectorAll('[data-motion-option]').forEach((button) => {
+      button.addEventListener('click', () => applyMotion(button.dataset.motionOption));
+    });
+
+    document.querySelectorAll('[data-cycle-option]').forEach((button) => {
+      button.addEventListener('click', () => applyMapCycle(button.dataset.cycleOption));
+    });
+
+    applyTheme(tweakState.theme);
+    applyScale(tweakState.scale);
+    applyMotion(tweakState.motion);
+    applyMapCycle(tweakState.mapCycle);
+  </script>
+</body>
+</html>
